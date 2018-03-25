@@ -1,7 +1,4 @@
-package com.topgames.uc.sound_core;
-
-import java.io.ByteArrayInputStream;
-import java.util.Arrays;
+package com.topgames.uc.sound_core.core;
 
 public class SoundDataGenerator {
 
