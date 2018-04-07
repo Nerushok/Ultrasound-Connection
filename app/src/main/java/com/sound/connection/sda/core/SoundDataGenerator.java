@@ -1,4 +1,4 @@
-package com.topgames.uc.sound_core.core;
+package com.sound.connection.sda.core;
 
 public class SoundDataGenerator {
 

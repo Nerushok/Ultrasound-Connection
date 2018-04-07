@@ -2,47 +2,58 @@ package com.topgames.uc
 
 import android.media.*
 import android.os.Bundle
-import android.os.Process
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.AppCompatEditText
 import android.util.Log
 import android.view.View
-import com.topgames.uc.sound_core.core.SoundDataAnalyzer
-import com.topgames.uc.sound_core.core.SoundDataGenerator
-import kotlin.concurrent.thread
+import com.sound.connection.sda.core.SoundDataAnalyzer
+import com.sound.connection.sda.core.SoundDataGenerator
 
 class TestActivity : AppCompatActivity() {
 
     private val tagName = this::class.java.simpleName
 
+    private lateinit var frequencyEditText: AppCompatEditText
+
     private val sampleRate = 44100
-    private val recordBlockSize = 256
+    private var generatedFrequency = 440
+    private val recordBlockSize = 1024
     private val soundDataGenerator = SoundDataGenerator(sampleRate)
     private val soundDataAnalyzer = SoundDataAnalyzer(sampleRate)
     private lateinit var audioRecorder: AudioRecord
     private var recordingBufferSize: Int = 0
-    private var paused = false
+    private var paused = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        frequencyEditText = findViewById(R.id.generatedFrequency)
+        frequencyEditText.setText(generatedFrequency.toString())
         findViewById<View>(R.id.generateSoundButton).setOnClickListener {
-//            generateSound()
+            //            generateSound()
+            generatedFrequency = frequencyEditText.text.toString().toInt()
             recordSound()
         }
         initAudioRecorder()
     }
 
     private fun initAudioRecorder() {
-        recordingBufferSize = AudioRecord.getMinBufferSize(sampleRate,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT)
+//        recordingBufferSize = AudioRecord.getMinBufferSize(sampleRate,
+//                AudioFormat.CHANNEL_IN_MONO,
+//                AudioFormat.ENCODING_PCM_16BIT)
+//        audioRecorder = AudioRecord(
+//                MediaRecorder.AudioSource.DEFAULT,
+//                sampleRate,
+//                AudioFormat.CHANNEL_IN_MONO,
+//                AudioFormat.ENCODING_PCM_16BIT,
+//                recordingBufferSize)
         audioRecorder = AudioRecord(
                 MediaRecorder.AudioSource.DEFAULT,
                 sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                recordingBufferSize)
+                recordBlockSize)
     }
 
     private fun generateSound() {
@@ -66,30 +77,70 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun recordSound() {
-        thread(start = true) {
-            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
-            var bufferReadResult: Int
-            val audioBuffer = shortArrayOf((recordingBufferSize.toShort() / 2).toShort())
-            val toTransform = DoubleArray(recordingBufferSize)
-            if (audioRecorder.state != AudioRecord.STATE_INITIALIZED) {
-                Log.e(tagName, "Audio Record can't initialize!")
-            }
-            audioRecorder.startRecording()
-            Log.d(tagName, "Start recording")
+//        if (!paused) {
+//            paused = true
+//            return
+//        } else {
+//            paused = false
+//        }
+//        thread(start = true) {
+//            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
+//            var bufferReadResult: Int
+//            val audioBuffer = ShortArray(recordingBufferSize)
+//            val toTransform = DoubleArray(recordingBufferSize)
+//            if (audioRecorder.state != AudioRecord.STATE_INITIALIZED) {
+//                Log.e(tagName, "Audio Record can't initialize!")
+//            }
+//            audioRecorder.startRecording()
+//            Log.d(tagName, "Start recording")
+//
+//            while (!paused) {
+//                bufferReadResult = audioRecorder.read(audioBuffer, 0, recordingBufferSize)
+//                // TODO analise
+//                audioBuffer.forEachIndexed { i, value ->
+//                        toTransform[i] = value.toDouble() / 32768.0
+//                }
+//                soundDataAnalyzer.analyzeRecorded(toTransform)
+//            }
+//            audioRecorder.stop()
+//        }
 
-            while (!paused) {
-                bufferReadResult = audioRecorder.read(audioBuffer, 0, audioBuffer.size)
-                // TODO analise
-                audioBuffer.forEachIndexed { i, value ->
-                    if (i < recordBlockSize && i < bufferReadResult) {
-                        toTransform[i] = value / 32768.0
-                    }
-                }
-                soundDataAnalyzer.analyzeRecorded(toTransform)
-            }
-            audioRecorder.stop()
-            audioRecorder.release()
+//        if (!paused) {
+//            paused = true
+//            return
+//        } else {
+//            paused = false
+//        }
+//        thread(start = true) {
+//            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
+//            var bufferReadResult: Int
+//            val audioBuffer = ShortArray(recordBlockSize)
+//            val toTransform = DoubleArray(recordBlockSize)
+//            if (audioRecorder.state != AudioRecord.STATE_INITIALIZED) {
+//                Log.e(tagName, "Audio Record can't initialize!")
+//            }
+//            audioRecorder.startRecording()
+//            Log.d(tagName, "Start recording")
+//
+//            while (!paused) {
+//                bufferReadResult = audioRecorder.read(audioBuffer, 0, recordingBufferSize)
+//                // TODO analise
+//                audioBuffer.forEachIndexed { i, value ->
+//                    toTransform[i] = value.toDouble() / 32768.0
+//                }
+//                soundDataAnalyzer.analyzeRecorded(toTransform)
+//            }
+//            audioRecorder.stop()
+//        }
+
+        val toTransform = DoubleArray(recordBlockSize)
+
+        for (i in 0 until toTransform.size) {
+            toTransform[i] = Math.sin(2 * Math.PI * i * generatedFrequency / sampleRate) / 32768.0
         }
+        val time = System.currentTimeMillis()
+        soundDataAnalyzer.analyzeRecorded(toTransform)
+        Log.d(tagName, "Time test = ${System.currentTimeMillis() - time}")
     }
 
     override fun onDestroy() {
