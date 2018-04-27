@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatEditText
 import android.util.Log
 import android.view.View
-import com.sound.connection.sda.core.SoundDataAnalyzer
-import com.sound.connection.sda.core.SoundDataGenerator
+import com.sound.connection.sda.`in`.SoundDataAnalyzer
+import com.sound.connection.sda.out.SoundDataGenerator
 
 class TestActivity : AppCompatActivity() {
 

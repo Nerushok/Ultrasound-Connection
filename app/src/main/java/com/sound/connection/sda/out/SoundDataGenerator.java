@@ -1,6 +1,6 @@
-package com.sound.connection.sda.core;
+package com.sound.connection.sda.out;
 
-public class SoundDataGenerator {
+public class SoundDataGenerator implements IOutputProtocol {
 
     /**
      * Generate sound sample rate.
