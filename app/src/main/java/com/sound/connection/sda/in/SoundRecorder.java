@@ -7,6 +7,7 @@ import android.util.Log;
 
 public class SoundRecorder {
 
+
     private final String mTagName = this.getClass().getSimpleName();
 
     private final byte STATE_RELEASED = 0;

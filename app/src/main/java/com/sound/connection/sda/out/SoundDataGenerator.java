@@ -1,6 +1,6 @@
 package com.sound.connection.sda.out;
 
-public class SoundDataGenerator implements IOutputProtocol {
+public class SoundDataGenerator {
 
     /**
      * Generate sound sample rate.
@@ -15,6 +15,8 @@ public class SoundDataGenerator implements IOutputProtocol {
      * Generate sound data array by input byte data.
      *
      * @param data                 - data for generation in sound waves;
+     * @param zeroValueFrequency   - frequency of zero symbol
+     * @param oneValueFrequency    - frequency of one symbol
      * @param singleSignalDuration - the smallest data signal duration in milliseconds;
      * @return output signal array.
      */

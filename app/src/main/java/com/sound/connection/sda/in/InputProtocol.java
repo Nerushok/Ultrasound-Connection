@@ -7,9 +7,7 @@ public class InputProtocol implements IInputProtocol {
 
     private SoundRecorder mSoundRecorder;
     private SoundDataAnalyzer mSoundDataAnalyzer;
-
     private SoundTransferProtocolOptions mOptions;
-
     private OnDataDetectListener mOnDataDetectListener;
 
     private int mBufferDataSize;
@@ -38,7 +36,8 @@ public class InputProtocol implements IInputProtocol {
                 mSampleRate,
                 mBufferDataSize,
                 mOnSoundDataWriteListener);
-        mSoundDataAnalyzer = new SoundDataAnalyzer(mSampleRate);
+        mSoundDataAnalyzer = new SoundDataAnalyzer(mSampleRate, mBufferDataSize,
+                mOptions.getZeroFrequency(), mOptions.getOneFrequency(), mOptions.getAdditionalFrequency());
         mBufferedData = new double[mBufferDataSize];
 
         setState(STATE_INITIATED);
@@ -47,11 +46,13 @@ public class InputProtocol implements IInputProtocol {
     void start() {
         if (mState == STATE_RELEASED || mState == STATE_LISTENING) return;
         setState(STATE_LISTENING);
+        mSoundRecorder.startRecording();
     }
 
     void pause() {
         if (mState == STATE_RELEASED || mState == STATE_PAUSED) return;
         setState(STATE_PAUSED);
+        mSoundRecorder.stopRecording();
     }
 
     private final OnSoundDataWriteListener mOnSoundDataWriteListener = new OnSoundDataWriteListener() {
@@ -88,7 +89,6 @@ public class InputProtocol implements IInputProtocol {
         this.mOnDataDetectListener = onDataDetectListener;
     }
 
-
     @Override
     public void release() {
         mSoundRecorder.release();
@@ -120,6 +120,7 @@ public class InputProtocol implements IInputProtocol {
     }
 
     private int i = 0;
+
     private void fillBufferDataArray(short[] newData) {
         for (i = 0; i < mBufferDataSize - 1; i++) {
             mBufferedData[i] = (double) newData[i] / 32768.0;
