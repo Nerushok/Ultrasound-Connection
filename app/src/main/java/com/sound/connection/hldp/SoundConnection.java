@@ -10,13 +10,17 @@ public class SoundConnection implements ISoundConnection {
     private ISoundTransferProtocol mSoundTransferProtocol;
 
 
+    public SoundConnection() {
+        init();
+    }
+
     private void init() {
         mSoundTransferProtocol = new SoundTransferProtocol();
     }
 
     @Override
     public void subscribe(Callback callback) {
-        // TODO
+        mSoundTransferProtocol.subscribe(callback);
     }
 
     @Override

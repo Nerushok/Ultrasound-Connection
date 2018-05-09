@@ -2,15 +2,27 @@ package com.sound.connection.stp;
 
 public class SoundTransferProtocolOptions {
 
+
     private int mSampleRate;
     private int mRecordBufferSize;
     private int mZeroFrequency;
     private int mOneFrequency;
     private int mAdditionalFrequency;
+    private int mSymbolDurationInMillis;
 
-    public SoundTransferProtocolOptions(int sampleRate, int recordBufferSize) {
+
+    public SoundTransferProtocolOptions(int sampleRate,
+                                        int recordBufferSize,
+                                        int zeroFrequency,
+                                        int oneFrequency,
+                                        int additionalFrequency,
+                                        int symbolDurationInMillis) {
         this.mSampleRate = sampleRate;
         this.mRecordBufferSize = recordBufferSize;
+        this.mZeroFrequency = zeroFrequency;
+        this.mOneFrequency = oneFrequency;
+        this.mAdditionalFrequency = additionalFrequency;
+        this.mSymbolDurationInMillis = symbolDurationInMillis;
     }
 
     public int getSampleRate() {
@@ -51,5 +63,13 @@ public class SoundTransferProtocolOptions {
 
     public void setAdditionalFrequency(int additionalFrequency) {
         mAdditionalFrequency = additionalFrequency;
+    }
+
+    public void setSymbolDurationInMillis(int durationInMillis) {
+        mSymbolDurationInMillis = durationInMillis;
+    }
+
+    public int getSymbolDurationInMillis() {
+        return mSymbolDurationInMillis;
     }
 }

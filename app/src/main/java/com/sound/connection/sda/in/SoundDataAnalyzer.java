@@ -23,7 +23,7 @@ public class SoundDataAnalyzer {
     private final static int ONE_SYMBOL = 1;
     private final static int ADDITIONAL_SYMBOL = 2;
 
-    private final int mHalfDeltaFrequencyDetect = 50;
+    private final int mHalfDeltaFrequencyDetect = 200;
     private final int mZeroFrequency;
     private final int mZeroFrequencyTopLimit;
     private final int mZeroFrequencyBottomLimit;
@@ -72,15 +72,20 @@ public class SoundDataAnalyzer {
         Complex[] fftTransformedData = Arrays.copyOfRange(
                 mFastFourierTransformer.transform(data, TransformType.FORWARD), mDataSize / 2, mDataSize);
 
+//        double[] test = new double[fftTransformedData.length];
+//        for (int i = 0; i < fftTransformedData.length; i++) {
+//            test[i] = fftTransformedData[i].abs();
+//        }
+
         double maxZeroValue = getMaxValueInArray(fftTransformedData,
-                mZeroFrequencyBottomLimit,
-                mZeroFrequencyTopLimit);
+                fftTransformedData.length - mZeroFrequencyTopLimit,
+                fftTransformedData.length - mZeroFrequencyBottomLimit);
         double maxOneValue = getMaxValueInArray(fftTransformedData,
-                mOneFrequencyBottomLimit,
-                mOneFrequencyTopLimit);
+                fftTransformedData.length -  mOneFrequencyTopLimit,
+                fftTransformedData.length - mOneFrequencyBottomLimit);
         double maxAdditionalValue = getMaxValueInArray(fftTransformedData,
-                mAdditionalSymbolFrequencyBottomLimit,
-                mAdditionalSymbolFrequencyTopLimit);
+                fftTransformedData.length - mAdditionalSymbolFrequencyTopLimit,
+                fftTransformedData.length - mAdditionalSymbolFrequencyBottomLimit);
 
         byte detectedSymbol = compareSymbolValue(maxZeroValue, maxOneValue, maxAdditionalValue);
 
@@ -130,15 +135,21 @@ public class SoundDataAnalyzer {
         int maxValueSymbol = -1;
         double maxValue = 0.0;
         double preMaxValue = 0.0;
-        for (int i = 0; i < mCompareDoubleArray.length-1; i++) {
-            if (mCompareDoubleArray[i] > maxValue) {
+        for (int i = 0; i < mCompareDoubleArray.length; i++) {
+            double value = mCompareDoubleArray[i];
+            if (value > maxValue) {
                 preMaxValue = maxValue;
-                maxValue = mCompareDoubleArray[i];
+                maxValue = value;
                 maxValueSymbol = i;
+                continue;
             }
+            if (value > preMaxValue) {
+                preMaxValue = value;
+            }
+
         }
 
-        if (maxValue < preMaxValue * 3) {
+        if (maxValue < preMaxValue * 10) {
             return NONE_SYMBOL;
         } else {
             if (maxValueSymbol == 0) return ZERO_SYMBOL;
@@ -175,8 +186,9 @@ public class SoundDataAnalyzer {
 
     private double getMaxValueInArray(Complex[] data, int from, int to) {
         double max = 0;
-        for (int i = from; i < to; to++) {
-            if (data[i].abs() > max) max = i;
+        for (int i = from; i <= to; i++) {
+            double value = data[i].abs();
+            if (value > max) max = value;
         }
         return max;
     }

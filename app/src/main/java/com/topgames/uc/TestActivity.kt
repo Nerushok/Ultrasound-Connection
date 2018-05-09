@@ -19,7 +19,7 @@ class TestActivity : AppCompatActivity() {
     private var generatedFrequency = 440
     private val recordBlockSize = 1024
     private val soundDataGenerator = SoundDataGenerator(sampleRate)
-    private val soundDataAnalyzer = SoundDataAnalyzer(sampleRate)
+//    private val soundDataAnalyzer = SoundDataAnalyzer(sampleRate)
     private lateinit var audioRecorder: AudioRecord
     private var recordingBufferSize: Int = 0
     private var paused = true
@@ -139,7 +139,7 @@ class TestActivity : AppCompatActivity() {
             toTransform[i] = Math.sin(2 * Math.PI * i * generatedFrequency / sampleRate) / 32768.0
         }
         val time = System.currentTimeMillis()
-        soundDataAnalyzer.analyzeRecorded(toTransform)
+//        soundDataAnalyzer.analyzeRecorded(toTransform)
         Log.d(tagName, "Time test = ${System.currentTimeMillis() - time}")
     }
 

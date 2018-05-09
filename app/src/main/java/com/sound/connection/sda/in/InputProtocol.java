@@ -43,13 +43,15 @@ public class InputProtocol implements IInputProtocol {
         setState(STATE_INITIATED);
     }
 
-    void start() {
+    @Override
+    public void start() {
         if (mState == STATE_RELEASED || mState == STATE_LISTENING) return;
         setState(STATE_LISTENING);
         mSoundRecorder.startRecording();
     }
 
-    void pause() {
+    @Override
+    public void pause() {
         if (mState == STATE_RELEASED || mState == STATE_PAUSED) return;
         setState(STATE_PAUSED);
         mSoundRecorder.stopRecording();
@@ -64,9 +66,18 @@ public class InputProtocol implements IInputProtocol {
     };
 
     private void onNewDataReceiver(short[] data) {
-        // TODO (analyze new data)
+
+//        int dataSize = 1024;
+//        double[] sound = new double[dataSize];
+//        short[] buffer = new short[dataSize];
+//        for (int i = 0; i < sound.length; i++) {
+//            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) mSampleRate / 18000));
+//            buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
+//        }
+
         fillBufferDataArray(data);
         byte foundedSymbol = mSoundDataAnalyzer.searchSpecialSymbol(mBufferedData);
+
         if (foundedSymbol >= 0 && foundedSymbol <= 1) {
             notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
         } else if (foundedSymbol == 2) {

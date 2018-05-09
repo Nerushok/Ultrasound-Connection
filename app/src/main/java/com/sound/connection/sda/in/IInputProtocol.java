@@ -8,6 +8,10 @@ public interface IInputProtocol {
 
     void init();
 
+    void start();
+
+    void pause();
+
     void subscribe(OnDataDetectListener onDataDetectListener);
 
     void release();

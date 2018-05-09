@@ -7,6 +7,7 @@ public class OutputProtocol implements IOutputProtocol {
 
     private SoundTransferProtocolOptions mOptions;
     private SoundDataGenerator mSoundDataGenerator;
+    private SoundOscillator mSoundOscillator;
 
 
     public OutputProtocol(SoundTransferProtocolOptions options) {
@@ -16,10 +17,15 @@ public class OutputProtocol implements IOutputProtocol {
 
     private void init() {
         mSoundDataGenerator = new SoundDataGenerator(mOptions.getSampleRate());
+        mSoundOscillator = new SoundOscillator(mOptions.getSampleRate());
     }
 
     @Override
     public void sendData(byte[] data, OnGenerateSoundListener listener) {
-
+        mSoundOscillator.generate(
+                mSoundDataGenerator.generateByDataArray(data,
+                        mOptions.getZeroFrequency(),
+                        mOptions.getOneFrequency(),
+                        mOptions.getSymbolDurationInMillis()));
     }
 }

@@ -58,7 +58,7 @@ public class SoundDataGenerator {
         double[] sound = new double[dataSize];
         short[] buffer = new short[dataSize];
         for (int i = 0; i < sound.length; i++) {
-            sound[i] = Math.sin((2.0 * Math.PI * i / (sampleRate / frequency)));
+            sound[i] = Math.sin(2.0 * Math.PI * i / ((double)sampleRate / frequency));
             buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
         }
         return buffer;
