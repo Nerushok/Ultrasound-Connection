@@ -1,9 +1,13 @@
 package com.sound.connection.sda.in;
 
+import android.util.Log;
+
 import com.sound.connection.stp.SoundTransferProtocolOptions;
 
 public class InputProtocol implements IInputProtocol {
 
+
+    private final String mTagName = this.getClass().getSimpleName();
 
     private SoundRecorder mSoundRecorder;
     private SoundDataAnalyzer mSoundDataAnalyzer;
@@ -30,11 +34,13 @@ public class InputProtocol implements IInputProtocol {
     public void init() {
         if (mState != STATE_RELEASED) return;
         mSampleRate = mOptions.getSampleRate();
-        mBufferDataSize = mOptions.getRecordBufferSize();
+//        mBufferDataSize = mOptions.getRecordBufferSize();
+        mBufferDataSize = 256;
+        mFftArraySize = mSampleRate * mOptions.getSymbolDurationInMillis() / 1000;
 
         mSoundRecorder = new SoundRecorder(
                 mSampleRate,
-                mBufferDataSize,
+                4096,
                 mOnSoundDataWriteListener);
         mSoundDataAnalyzer = new SoundDataAnalyzer(mSampleRate, mBufferDataSize,
                 mOptions.getZeroFrequency(), mOptions.getOneFrequency(), mOptions.getAdditionalFrequency());
@@ -61,28 +67,51 @@ public class InputProtocol implements IInputProtocol {
         @Override
         public void onWrite(short[] data) {
             if (mState != STATE_LISTENING) return;
-            onNewDataReceiver(data);
+            onNewDataReceived(data);
         }
     };
 
-    private void onNewDataReceiver(short[] data) {
+    private final byte mQuantumSize = 8;
+    private int mFftArraySize;
+    private final short[][] mQuantumData = new short[mQuantumSize][mFftArraySize];
 
-//        int dataSize = 1024;
+    private void onNewDataReceived(short[] receivedData) {
+
+//        int dataSize = 4096;
 //        double[] sound = new double[dataSize];
 //        short[] buffer = new short[dataSize];
 //        for (int i = 0; i < sound.length; i++) {
-//            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) mSampleRate / 18000));
+//            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) mSampleRate / 17000));
 //            buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
 //        }
 
-        fillBufferDataArray(data);
-        byte foundedSymbol = mSoundDataAnalyzer.searchSpecialSymbol(mBufferedData);
+        short[] data = receivedData;
 
-        if (foundedSymbol >= 0 && foundedSymbol <= 1) {
-            notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
-        } else if (foundedSymbol == 2) {
-            notifyOnDataDetectListenersByStartSymbol();
+        int reducedDataSize = mFftArraySize / mQuantumSize;
+        short[] reducedData = new short[mFftArraySize];
+        int innerIndex = 0;
+
+        for (int i = 0; i < data.length; i++) {
+            reducedData[innerIndex] = data[i];
+            innerIndex++;
+            if (innerIndex == reducedDataSize) {
+
+                innerIndex = 0;
+
+                fillBufferDataArray(reducedData);
+                long time = System.currentTimeMillis();
+                byte foundedSymbol = mSoundDataAnalyzer.searchSpecialSymbol(mBufferedData);
+
+//                Log.d(mTagName, "onNewDataReceived time - " + String.valueOf(System.currentTimeMillis() - time));
+                if (foundedSymbol >= 0 && foundedSymbol <= 1) {
+                    notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
+                } else if (foundedSymbol == 2) {
+                    notifyOnDataDetectListenersByStartSymbol();
+                }
+            }
+
         }
+
     }
 
     private void notifyOnDataDetectListenersByStartSymbol() {
@@ -130,11 +159,23 @@ public class InputProtocol implements IInputProtocol {
         return mState;
     }
 
-    private int i = 0;
+    private int i1 = 0;
 
     private void fillBufferDataArray(short[] newData) {
-        for (i = 0; i < mBufferDataSize - 1; i++) {
-            mBufferedData[i] = (double) newData[i] / 32768.0;
+        for (i1 = 0; i1 < mBufferDataSize; i1++) {
+            mBufferedData[i1] = (double) newData[i1] / 32768.0;
+        }
+    }
+
+    private int i2 = 0;
+    private int j2 = 0;
+    private int p2 = 0;
+
+    private void generateQuantumData(short[] recordedData) {
+        for (i2 = 0; i2 < mQuantumData.length; i2++) { // loop for quantum
+            for (j2 = 0; j2 < mQuantumData.length; j2++) {
+
+            }
         }
     }
 }

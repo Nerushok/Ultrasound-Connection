@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -13,6 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="Received data:" />
 
         <TextView
@@ -20,22 +22,74 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="-" />
+            android:text="---"
+            android:textColor="@android:color/holo_red_dark"
+            tools:text="10001010" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear" />
+
+            <Button
+                android:id="@+id/startReceiving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="START" />
+
+            <Button
+                android:id="@+id/stopReceiving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="STOP" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/sendingData"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="a"
+            android:layout_marginTop="48dp"
+            android:hint="Sending data" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Data:"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/sendingBinaryData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:textColor="@android:color/black"
+                tools:text="1010001" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/sendData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="48dp"
             android:text="Send data" />
-
-        <Button
-            android:id="@+id/startReceiving"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Start receiving" />
 
     </LinearLayout>
 

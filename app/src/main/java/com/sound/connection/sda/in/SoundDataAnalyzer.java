@@ -69,9 +69,11 @@ public class SoundDataAnalyzer {
      * else if data symbol 1 - 1, else -1.
      */
     public byte searchSpecialSymbol(double[] data) {
+        long time = System.currentTimeMillis();
         Complex[] fftTransformedData = Arrays.copyOfRange(
                 mFastFourierTransformer.transform(data, TransformType.FORWARD), mDataSize / 2, mDataSize);
 
+        Log.d(mTagName, "onNewDataReceived time - " + String.valueOf(System.currentTimeMillis() - time));
 //        double[] test = new double[fftTransformedData.length];
 //        for (int i = 0; i < fftTransformedData.length; i++) {
 //            test[i] = fftTransformedData[i].abs();
@@ -149,7 +151,7 @@ public class SoundDataAnalyzer {
 
         }
 
-        if (maxValue < preMaxValue * 10) {
+        if (maxValue < preMaxValue * 3) {
             return NONE_SYMBOL;
         } else {
             if (maxValueSymbol == 0) return ZERO_SYMBOL;

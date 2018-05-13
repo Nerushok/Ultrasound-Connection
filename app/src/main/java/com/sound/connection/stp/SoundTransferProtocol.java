@@ -18,6 +18,10 @@ public class SoundTransferProtocol implements ISoundTransferProtocol {
 
     private Callback mDataReceivedCallback;
 
+    private final byte STATE_RELEASED = 0;
+    private final byte STATE_INITIATED = 3;
+    private volatile byte mState = STATE_RELEASED;
+
 
     public SoundTransferProtocol() {
         mOptions = getDefaultOptions();
@@ -30,20 +34,25 @@ public class SoundTransferProtocol implements ISoundTransferProtocol {
     }
 
     private void init() {
+        if (mState != STATE_RELEASED) return;
         mInputProtocol = new InputProtocol(mOptions);
         mOutputProtocol = new OutputProtocol(mOptions);
 
         mInputProtocol.init();
+
+        setState(STATE_INITIATED);
     }
 
 
     @Override
     public void send(byte[] data, RequestCallback callback) {
+        checkWorkingState();
         mOutputProtocol.sendData(data, null);
     }
 
     @Override
     public void subscribe(Callback callback) {
+        checkWorkingState();
         mDataReceivedCallback = callback;
         mInputProtocol.subscribe(mOnDataDetectListener);
         mInputProtocol.start();
@@ -51,6 +60,12 @@ public class SoundTransferProtocol implements ISoundTransferProtocol {
 
     private void notifySubscribedListeners(boolean binary) {
         mDataReceivedCallback.onReceive(binary ? "1" : "0");
+    }
+
+    private void checkWorkingState() {
+        if (mState == STATE_RELEASED) {
+            init();
+        }
     }
 
     private final OnDataDetectListener mOnDataDetectListener = new OnDataDetectListener() {
@@ -65,13 +80,39 @@ public class SoundTransferProtocol implements ISoundTransferProtocol {
         }
     };
 
+    @Override
+    public void release() {
+        if (mState == STATE_RELEASED) return;
+        mInputProtocol.release();
+        mOutputProtocol.release();
+        setState(STATE_RELEASED);
+    }
+
+    /**
+     * Set new working state.
+     *
+     * @param state - new state.
+     */
+    private void setState(final byte state) {
+        this.mState = state;
+    }
+
+    /**
+     * Get current working state.
+     *
+     * @return - current state.
+     */
+    public int getState() {
+        return mState;
+    }
+
     public SoundTransferProtocolOptions getDefaultOptions() {
         return new SoundTransferProtocolOptions(
                 44100,
-                1024,
+                256,
                 17000,
+                17500,
                 18000,
-                19000,
-                50);
+                30);
     }
 }

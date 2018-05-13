@@ -8,4 +8,6 @@ public interface ISoundTransferProtocol {
     void send(byte[] data, RequestCallback callback);
 
     void subscribe(Callback callback);
+
+    void release();
 }

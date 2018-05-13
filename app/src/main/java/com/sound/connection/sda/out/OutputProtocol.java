@@ -21,6 +21,11 @@ public class OutputProtocol implements IOutputProtocol {
     }
 
     @Override
+    public void release() {
+        mSoundOscillator.release();
+    }
+
+    @Override
     public void sendData(byte[] data, OnGenerateSoundListener listener) {
         mSoundOscillator.generate(
                 mSoundDataGenerator.generateByDataArray(data,

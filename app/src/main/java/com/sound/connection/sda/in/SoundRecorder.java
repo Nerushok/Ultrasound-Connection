@@ -44,6 +44,12 @@ public class SoundRecorder {
         Log.d(mTagName, "init recorder");
         mRecordingThread = new Thread(mAudioRecordRunnable, "AudioRecordingThread");
 
+        int minSize = AudioRecord.getMinBufferSize(
+                mSampleRate,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        Log.d(mTagName, "min buffer size - " + String.valueOf(minSize));
+
         mAudioRecorder = new AudioRecord(
                 MediaRecorder.AudioSource.DEFAULT,
                 mSampleRate,

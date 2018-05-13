@@ -43,6 +43,7 @@ public class SoundOscillator {
     }
 
     public void release() {
+        if (!mInitiated) return;
         mAudioTrack.stop();
         mAudioTrack.release();
         mInitiated = false;

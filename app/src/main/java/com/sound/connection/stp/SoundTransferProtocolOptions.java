@@ -9,6 +9,7 @@ public class SoundTransferProtocolOptions {
     private int mOneFrequency;
     private int mAdditionalFrequency;
     private int mSymbolDurationInMillis;
+    private int mSymbolDurationInDiscrete;
 
 
     public SoundTransferProtocolOptions(int sampleRate,
@@ -71,5 +72,9 @@ public class SoundTransferProtocolOptions {
 
     public int getSymbolDurationInMillis() {
         return mSymbolDurationInMillis;
+    }
+
+    public int getSymbolDurationInDiscrete() {
+        return mSampleRate * mSymbolDurationInMillis / 1000;
     }
 }

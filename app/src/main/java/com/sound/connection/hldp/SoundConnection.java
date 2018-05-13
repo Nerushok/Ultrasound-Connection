@@ -31,6 +31,6 @@ public class SoundConnection implements ISoundConnection {
 
     @Override
     public void release() {
-        // TODO
+        mSoundTransferProtocol.release();
     }
 }
