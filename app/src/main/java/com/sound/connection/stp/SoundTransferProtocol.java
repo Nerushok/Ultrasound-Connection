@@ -110,9 +110,9 @@ public class SoundTransferProtocol implements ISoundTransferProtocol {
         return new SoundTransferProtocolOptions(
                 44100,
                 256,
-                17000,
-                17500,
-                18000,
+                19000,
+                19500,
+                20000,
                 30);
     }
 }

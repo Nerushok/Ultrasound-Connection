@@ -14,9 +14,18 @@ public class InputProtocol implements IInputProtocol {
     private SoundTransferProtocolOptions mOptions;
     private OnDataDetectListener mOnDataDetectListener;
 
+    private final byte EMPTY_SYMBOL = -1;
+    private final byte ZERO_SYMBOL = 0;
+    private final byte ONE_SYMBOL = 1;
+    private final byte ADDITIONAL_SYMBOL = 2;
+
     private int mBufferDataSize;
     private int mSampleRate;
     private double[] mBufferedData;
+    private final byte mQuantumSize = 8;
+    private int mFftArraySize;
+    private byte[] mAnalyzingSymbols = {EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL,
+            EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL};
 
     private final byte STATE_RELEASED = 0;
     private final byte STATE_LISTENING = 1;
@@ -71,10 +80,6 @@ public class InputProtocol implements IInputProtocol {
         }
     };
 
-    private final byte mQuantumSize = 8;
-    private int mFftArraySize;
-    private final short[][] mQuantumData = new short[mQuantumSize][mFftArraySize];
-
     private void onNewDataReceived(short[] receivedData) {
 
 //        int dataSize = 4096;
@@ -95,23 +100,59 @@ public class InputProtocol implements IInputProtocol {
             reducedData[innerIndex] = data[i];
             innerIndex++;
             if (innerIndex == reducedDataSize) {
-
                 innerIndex = 0;
 
                 fillBufferDataArray(reducedData);
-                long time = System.currentTimeMillis();
                 byte foundedSymbol = mSoundDataAnalyzer.searchSpecialSymbol(mBufferedData);
+//                if (foundedSymbol >= 0 && foundedSymbol <= 1) {
+//                    notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
+//                } else if (foundedSymbol == 2) {
+//                    notifyOnDataDetectListenersByStartSymbol();
+//                }
+                putToAnalyzingSymbol(foundedSymbol);
 
-//                Log.d(mTagName, "onNewDataReceived time - " + String.valueOf(System.currentTimeMillis() - time));
-                if (foundedSymbol >= 0 && foundedSymbol <= 1) {
-                    notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
-                } else if (foundedSymbol == 2) {
-                    notifyOnDataDetectListenersByStartSymbol();
+                byte detectedSymbol = checkPresenceOfCharacter();
+                if (detectedSymbol != EMPTY_SYMBOL) {
+                    clearAnalyzingArray();
+                    if (foundedSymbol >= 0 && foundedSymbol <= 1) {
+                        notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
+                    } else if (foundedSymbol == 2) {
+                        notifyOnDataDetectListenersByStartSymbol();
+                    }
                 }
             }
-
         }
+    }
 
+    private void putToAnalyzingSymbol(byte newSymbol) {
+        System.arraycopy(mAnalyzingSymbols, 1, mAnalyzingSymbols, 0, mQuantumSize-1);
+        mAnalyzingSymbols[mAnalyzingSymbols.length - 1] = newSymbol;
+    }
+
+    private byte mZeroSymbolCount = 0;
+    private byte mOneSymbolCount = 0;
+    private byte mAdditionalSymbolCount = 0;
+
+    private byte checkPresenceOfCharacter() {
+        mZeroSymbolCount = 0;
+        mOneSymbolCount = 0;
+        mAdditionalSymbolCount = 0;
+        for (int i = 0; i < mAnalyzingSymbols.length; i++) {
+            byte quantum = mAnalyzingSymbols[i];
+            if (quantum == ZERO_SYMBOL) mZeroSymbolCount++;
+            else if (quantum == ONE_SYMBOL) mOneSymbolCount++;
+            else if (quantum == ADDITIONAL_SYMBOL) mAdditionalSymbolCount++;
+        }
+        if (mZeroSymbolCount > 6) return ZERO_SYMBOL;
+        else if (mOneSymbolCount > 6) return ONE_SYMBOL;
+        else if (mAdditionalSymbolCount > 6) return ADDITIONAL_SYMBOL;
+        else return EMPTY_SYMBOL;
+    }
+
+    private void clearAnalyzingArray() {
+        for (int i = 0; i < mAnalyzingSymbols.length; i++) {
+            mAnalyzingSymbols[i] = EMPTY_SYMBOL;
+        }
     }
 
     private void notifyOnDataDetectListenersByStartSymbol() {
@@ -164,18 +205,6 @@ public class InputProtocol implements IInputProtocol {
     private void fillBufferDataArray(short[] newData) {
         for (i1 = 0; i1 < mBufferDataSize; i1++) {
             mBufferedData[i1] = (double) newData[i1] / 32768.0;
-        }
-    }
-
-    private int i2 = 0;
-    private int j2 = 0;
-    private int p2 = 0;
-
-    private void generateQuantumData(short[] recordedData) {
-        for (i2 = 0; i2 < mQuantumData.length; i2++) { // loop for quantum
-            for (j2 = 0; j2 < mQuantumData.length; j2++) {
-
-            }
         }
     }
 }

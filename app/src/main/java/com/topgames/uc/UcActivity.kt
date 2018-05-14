@@ -40,6 +40,12 @@ class UcActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_uc)
 
+        tvSendingBinaryData.text = Utils.convertToBinary(etSendingData.text.toString()).run {
+            var binary = StringBuilder()
+            this.forEach { bit -> binary.append(bit) }
+            binary.toString()
+        }
+
         findViewById<View>(R.id.sendData).setOnClickListener {
             etSendingData.text.let {
                 if (!TextUtils.isEmpty(it))

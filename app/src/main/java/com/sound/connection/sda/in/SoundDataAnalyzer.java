@@ -69,15 +69,8 @@ public class SoundDataAnalyzer {
      * else if data symbol 1 - 1, else -1.
      */
     public byte searchSpecialSymbol(double[] data) {
-        long time = System.currentTimeMillis();
         Complex[] fftTransformedData = Arrays.copyOfRange(
                 mFastFourierTransformer.transform(data, TransformType.FORWARD), mDataSize / 2, mDataSize);
-
-        Log.d(mTagName, "onNewDataReceived time - " + String.valueOf(System.currentTimeMillis() - time));
-//        double[] test = new double[fftTransformedData.length];
-//        for (int i = 0; i < fftTransformedData.length; i++) {
-//            test[i] = fftTransformedData[i].abs();
-//        }
 
         double maxZeroValue = getMaxValueInArray(fftTransformedData,
                 fftTransformedData.length - mZeroFrequencyTopLimit,
@@ -90,23 +83,6 @@ public class SoundDataAnalyzer {
                 fftTransformedData.length - mAdditionalSymbolFrequencyBottomLimit);
 
         byte detectedSymbol = compareSymbolValue(maxZeroValue, maxOneValue, maxAdditionalValue);
-
-//        Complex[] complexes = mFastFourierTransformer.transform(data, TransformType.FORWARD);
-//        Complex[] array = Arrays.copyOfRange(complexes, complexes.length / 2, complexes.length);
-//        int x = 0;
-//        double maxAmplitudeFrequency = 0;
-//        for (int i = result.length - 1; i >= 0; i--) {
-//            double realValue = array[i].abs();
-//            result[i] = realValue;
-//            if (maxAmplitudeFrequency < realValue) {
-//                maxAmplitudeFrequency = realValue;
-//                x = i;
-//            }
-//        }
-
-//        Log.d(mTagName, "x = " + String.valueOf(x));
-//        Log.d(mTagName, "frequency " + String.valueOf((result.length - x) * (mSampleRate / data.length)));
-//        Log.d(mTagName, "==============");
         return detectedSymbol;
     }
 
@@ -151,7 +127,7 @@ public class SoundDataAnalyzer {
 
         }
 
-        if (maxValue < preMaxValue * 3) {
+        if (maxValue < preMaxValue * 2) {
             return NONE_SYMBOL;
         } else {
             if (maxValueSymbol == 0) return ZERO_SYMBOL;
