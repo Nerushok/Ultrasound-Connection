@@ -143,9 +143,9 @@ public class InputProtocol implements IInputProtocol {
             else if (quantum == ONE_SYMBOL) mOneSymbolCount++;
             else if (quantum == ADDITIONAL_SYMBOL) mAdditionalSymbolCount++;
         }
-        if (mZeroSymbolCount > 6) return ZERO_SYMBOL;
-        else if (mOneSymbolCount > 6) return ONE_SYMBOL;
-        else if (mAdditionalSymbolCount > 6) return ADDITIONAL_SYMBOL;
+        if (mZeroSymbolCount >= 6) return ZERO_SYMBOL;
+        else if (mOneSymbolCount >= 6) return ONE_SYMBOL;
+        else if (mAdditionalSymbolCount >= 6) return ADDITIONAL_SYMBOL;
         else return EMPTY_SYMBOL;
     }
 

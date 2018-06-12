@@ -76,7 +76,7 @@ public class SoundDataAnalyzer {
                 fftTransformedData.length - mZeroFrequencyTopLimit,
                 fftTransformedData.length - mZeroFrequencyBottomLimit);
         double maxOneValue = getMaxValueInArray(fftTransformedData,
-                fftTransformedData.length -  mOneFrequencyTopLimit,
+                fftTransformedData.length - mOneFrequencyTopLimit,
                 fftTransformedData.length - mOneFrequencyBottomLimit);
         double maxAdditionalValue = getMaxValueInArray(fftTransformedData,
                 fftTransformedData.length - mAdditionalSymbolFrequencyTopLimit,
@@ -124,7 +124,6 @@ public class SoundDataAnalyzer {
             if (value > preMaxValue) {
                 preMaxValue = value;
             }
-
         }
 
         if (maxValue < preMaxValue * 2) {
