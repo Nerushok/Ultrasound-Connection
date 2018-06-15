@@ -31,6 +31,8 @@ public class OutputProtocol implements IOutputProtocol {
                 mSoundDataGenerator.generateByDataArray(data,
                         mOptions.getZeroFrequency(),
                         mOptions.getOneFrequency(),
-                        mOptions.getSymbolDurationInMillis()));
+                        mOptions.getSymbolDurationInMillis(),
+                        mOptions.getPauseDurationInMillis()
+                ));
     }
 }

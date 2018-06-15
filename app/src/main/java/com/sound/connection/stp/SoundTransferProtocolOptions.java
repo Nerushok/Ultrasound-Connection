@@ -10,6 +10,7 @@ public class SoundTransferProtocolOptions {
     private int mAdditionalFrequency;
     private int mSymbolDurationInMillis;
     private int mSymbolDurationInDiscrete;
+    private int mPauseDurationInMillis;
 
 
     public SoundTransferProtocolOptions(int sampleRate,
@@ -17,13 +18,15 @@ public class SoundTransferProtocolOptions {
                                         int zeroFrequency,
                                         int oneFrequency,
                                         int additionalFrequency,
-                                        int symbolDurationInMillis) {
+                                        int symbolDurationInMillis,
+                                        int pauseDurationInMillis) {
         this.mSampleRate = sampleRate;
         this.mRecordBufferSize = recordBufferSize;
         this.mZeroFrequency = zeroFrequency;
         this.mOneFrequency = oneFrequency;
         this.mAdditionalFrequency = additionalFrequency;
         this.mSymbolDurationInMillis = symbolDurationInMillis;
+        this.mPauseDurationInMillis = pauseDurationInMillis;
     }
 
     public int getSampleRate() {
@@ -76,5 +79,13 @@ public class SoundTransferProtocolOptions {
 
     public int getSymbolDurationInDiscrete() {
         return mSampleRate * mSymbolDurationInMillis / 1000;
+    }
+
+    public void setPauseDurationInMillis(int pauseDurationInMillis) {
+        mPauseDurationInMillis = pauseDurationInMillis;
+    }
+
+    public int getPauseDurationInMillis() {
+        return mPauseDurationInMillis;
     }
 }

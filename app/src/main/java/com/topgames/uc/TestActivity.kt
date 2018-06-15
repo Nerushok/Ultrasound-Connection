@@ -67,11 +67,11 @@ class TestActivity : AppCompatActivity() {
                 mBufferSize, AudioTrack.MODE_STREAM)
 
         // Sine wave
-        val soundData = soundDataGenerator.generateByDataArray(byteArrayOf(0, 1, 0, 1, 0, 1), 1000, 2000, 500)
+//        val soundData = soundDataGenerator.generateByDataArray(byteArrayOf(0, 1, 0, 1, 0, 1), 1000, 2000, 500)
         mAudioTrack.setStereoVolume(AudioTrack.getMaxVolume(), AudioTrack.getMaxVolume())
         mAudioTrack.play()
 
-        mAudioTrack.write(soundData, 0, soundData.size)
+//        mAudioTrack.write(soundData, 0, soundData.size)
         mAudioTrack.stop()
         mAudioTrack.release()
     }
