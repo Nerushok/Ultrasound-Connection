@@ -70,6 +70,13 @@ public class SoundDataGenerator {
                 generatedByValue = generateSignalWithPauseInternal(
                         oneValueFrequency, mSampleRate, symbolDuration, pauseDuration);
             }
+//            if (value == 0) {
+//                generatedByValue = generateSignalInternal(
+//                        zeroValueFrequency, mSampleRate, symbolDuration);
+//            } else {
+//                generatedByValue = generateSignalInternal(
+//                        oneValueFrequency, mSampleRate, symbolDuration);
+//            }
             System.arraycopy(generatedByValue, 0, sound, offset, generatedByValue.length);
             offset += generatedByValue.length;
         }
@@ -116,15 +123,12 @@ public class SoundDataGenerator {
         int pauseSize = sampleRate * pauseDuration / 1000;
         double[] sound = new double[dataSize + pauseSize];
         short[] buffer = new short[dataSize + pauseSize];
-        for (int i = 0; i < sound.length; i++) {
-            if (i <= dataSize) {
-                sound[i] = Math.sin(2.0 * Math.PI * i / ((double) sampleRate / frequency));
-                buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
-            } else {
-                sound[i] = Math.sin(2.0 * Math.PI * i / ((double) sampleRate / 1));
-                buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
-            }
+        for (int i = 0; i < dataSize; i++) {
+            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) sampleRate / frequency));
+            buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
         }
+        fadeIn(buffer, 5);
+        fadeOut(buffer, 5, dataSize);
         return buffer;
     }
 
@@ -146,5 +150,32 @@ public class SoundDataGenerator {
                                                      final int pauseDuration) {
         int signalWithPauseDuration = mSampleRate * (symbolDuration + pauseDuration) / 1000 /*one second*/;
         return byteDataSize * signalWithPauseDuration;
+    }
+
+//    private void fadeOut(double[] soundData, int fadeInPercent) {
+//        int fadeInSize = (int) ((double) soundData.length * 5d / 100);
+//        int fadeInIndex = fadeInSize;
+//        for (int i = soundData.length - fadeInSize; i < soundData.length; i++) {
+//            soundData[i] = soundData[i] * fadeInIndex / fadeInSize;
+//            fadeInIndex--;
+//        }
+//    }
+
+    private void fadeIn(short[] soundData, int fadePercent) {
+        int fadeInSize = (soundData.length * fadePercent / 100);
+        int fadeInIndex = 0;
+        for (int i = 0; i < fadeInSize; i++) {
+            soundData[i] = (short) (soundData[i] * ((double) fadeInIndex / fadeInSize));
+            fadeInIndex++;
+        }
+    }
+
+    private void fadeOut(short[] soundData, int fadePercent, int to) {
+        int fadeInSize = (soundData.length * fadePercent / 100);
+        int fadeInIndex = fadeInSize;
+        for (int i = to - fadeInSize; i < to; i++) {
+            soundData[i] = (short) (soundData[i] * ((double) fadeInIndex / fadeInSize));
+            fadeInIndex--;
+        }
     }
 }

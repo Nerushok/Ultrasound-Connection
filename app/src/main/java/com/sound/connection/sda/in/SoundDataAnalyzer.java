@@ -72,6 +72,19 @@ public class SoundDataAnalyzer {
         Complex[] fftTransformedData = Arrays.copyOfRange(
                 mFastFourierTransformer.transform(data, TransformType.FORWARD), mDataSize / 2, mDataSize);
 
+//        double[] re = data;
+//        double[] img = new double[data.length];
+//
+//        FastFourierTransform.fastFT(re, img, true);
+//
+//        double[] realValues = new double[data.length];
+//
+//        for (int i = 0; i < realValues.length; i++) {
+//            double real = re[i];
+//            double image = img[i];
+//            realValues[i] = Math.sqrt((real * real) + (image * image));
+//        }
+
         double maxZeroValue = getMaxValueInArray(fftTransformedData,
                 fftTransformedData.length - mZeroFrequencyTopLimit,
                 fftTransformedData.length - mZeroFrequencyBottomLimit);
@@ -82,12 +95,22 @@ public class SoundDataAnalyzer {
                 fftTransformedData.length - mAdditionalSymbolFrequencyTopLimit,
                 fftTransformedData.length - mAdditionalSymbolFrequencyBottomLimit);
 
+        double[] realValues = new double[fftTransformedData.length];
+        int i = 0;
+        for (Complex value : fftTransformedData) {
+            realValues[i] =  Math.sqrt((value.getReal() * value.getReal()) + (value.getImaginary() * value.getImaginary()));
+            i++;
+        }
+
         byte detectedSymbol = compareSymbolValue(maxZeroValue, maxOneValue, maxAdditionalValue);
+        if (detectedSymbol != -1) {
+            Log.d(mTagName, "Detected symbol - " + String.valueOf(detectedSymbol));
+        }
         return detectedSymbol;
     }
 
     /**
-     * Call this method only once for optimisation.
+     * Call this method only once for optimization.
      * @param frequency - frequency for calculate
      * @return position in FFT array.
      */
@@ -126,7 +149,13 @@ public class SoundDataAnalyzer {
             }
         }
 
-        if (maxValue < preMaxValue * 2) {
+
+        Log.d(mTagName, "Zero -" + String.valueOf(maxZeroValue));
+        Log.d(mTagName, "One -" + String.valueOf(maxOneValue));
+        Log.d(mTagName, "Additional -" + String.valueOf(maxAdditionalValue));
+
+
+        if (maxValue < preMaxValue * 4.0d) {
             return NONE_SYMBOL;
         } else {
             if (maxValueSymbol == 0) return ZERO_SYMBOL;

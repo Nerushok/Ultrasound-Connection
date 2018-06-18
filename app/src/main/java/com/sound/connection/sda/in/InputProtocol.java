@@ -86,9 +86,10 @@ public class InputProtocol implements IInputProtocol {
 //        double[] sound = new double[dataSize];
 //        short[] buffer = new short[dataSize];
 //        for (int i = 0; i < sound.length; i++) {
-//            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) mSampleRate / 17000));
+//            sound[i] = Math.sin(2.0 * Math.PI * i / ((double) mSampleRate / 18000));
 //            buffer[i] = (short) (sound[i] * Short.MAX_VALUE);
 //        }
+//        short[] data = buffer;
 
         short[] data = receivedData;
 
@@ -104,11 +105,6 @@ public class InputProtocol implements IInputProtocol {
 
                 fillBufferDataArray(reducedData);
                 byte foundedSymbol = mSoundDataAnalyzer.searchSpecialSymbol(mBufferedData);
-//                if (foundedSymbol >= 0 && foundedSymbol <= 1) {
-//                    notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
-//                } else if (foundedSymbol == 2) {
-//                    notifyOnDataDetectListenersByStartSymbol();
-//                }
                 putToAnalyzingSymbol(foundedSymbol);
 
                 byte detectedSymbol = checkPresenceOfCharacter();
@@ -116,6 +112,7 @@ public class InputProtocol implements IInputProtocol {
                     clearAnalyzingArray();
                     if (foundedSymbol >= 0 && foundedSymbol <= 1) {
                         notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
+                        i += reducedDataSize * 2;
                     } else if (foundedSymbol == 2) {
                         notifyOnDataDetectListenersByStartSymbol();
                     }

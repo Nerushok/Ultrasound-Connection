@@ -50,12 +50,14 @@ public class SoundRecorder {
                 AudioFormat.ENCODING_PCM_16BIT);
         Log.d(mTagName, "min buffer size - " + String.valueOf(minSize));
 
+        if (minSize < 4096) minSize = 4096;
+
         mAudioRecorder = new AudioRecord(
                 MediaRecorder.AudioSource.DEFAULT,
                 mSampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                mRecordBufferSize);
+                minSize);
 
         setState(STATE_INITIATED);
     }
