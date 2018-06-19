@@ -21,6 +21,7 @@ public class InputProtocol implements IInputProtocol {
 
     private int mBufferDataSize;
     private int mSampleRate;
+    private int mPauseDuration;
     private double[] mBufferedData;
     private final byte mQuantumSize = 8;
     private int mFftArraySize;
@@ -46,6 +47,7 @@ public class InputProtocol implements IInputProtocol {
 //        mBufferDataSize = mOptions.getRecordBufferSize();
         mBufferDataSize = 256;
         mFftArraySize = mSampleRate * mOptions.getSymbolDurationInMillis() / 1000;
+        mPauseDuration = mSampleRate * mOptions.getPauseDurationInMillis() / 1000;
 
         mSoundRecorder = new SoundRecorder(
                 mSampleRate,
@@ -80,6 +82,11 @@ public class InputProtocol implements IInputProtocol {
         }
     };
 
+
+    private int mForwardValue = 0;
+//    private int mPreviousRemainder = 0;
+    private short[] mPreviousRemainderArray = null;
+
     private void onNewDataReceived(short[] receivedData) {
 
 //        int dataSize = 4096;
@@ -92,15 +99,39 @@ public class InputProtocol implements IInputProtocol {
 //        short[] data = buffer;
 
         short[] data = receivedData;
+        int dataLength = data.length;
 
         int reducedDataSize = mFftArraySize / mQuantumSize;
         short[] reducedData = new short[mFftArraySize];
         int innerIndex = 0;
+        int previousArrayIndex = 0;
 
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < dataLength; i++) {
+
+//            if (i == 0) {
+//                if (mForwardValue)
+//            }
+
+            if (mForwardValue != 0) {
+                i += mForwardValue;
+                mForwardValue = 0;
+            }
+
+            if (dataLength - i < reducedDataSize) {
+                if (mPreviousRemainderArray == null) {
+                    mPreviousRemainderArray = new short[dataLength - i];
+                }
+                mPreviousRemainderArray[previousArrayIndex] = data[i];
+            }
+
             reducedData[innerIndex] = data[i];
             innerIndex++;
             if (innerIndex == reducedDataSize) {
+//                if (data.length - i < reducedDataSize) {
+//                    mPreviousRemainder = data.length - i;
+
+//                }
+//                mPreviousRemainder = 0;
                 innerIndex = 0;
 
                 fillBufferDataArray(reducedData);
@@ -112,7 +143,17 @@ public class InputProtocol implements IInputProtocol {
                     clearAnalyzingArray();
                     if (foundedSymbol >= 0 && foundedSymbol <= 1) {
                         notifyOnDataDetectListenersByDataSymbol(foundedSymbol != 0);
-                        i += reducedDataSize * 2;
+
+
+                        // TODO increment
+                        if (dataLength - i > mPauseDuration) {
+                            mForwardValue += mPauseDuration;
+                        } else {
+                            mForwardValue = dataLength - i + mPauseDuration;
+                            i = dataLength;
+                        }
+
+
                     } else if (foundedSymbol == 2) {
                         notifyOnDataDetectListenersByStartSymbol();
                     }

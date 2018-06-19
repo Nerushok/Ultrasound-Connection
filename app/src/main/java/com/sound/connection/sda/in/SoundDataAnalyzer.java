@@ -103,9 +103,9 @@ public class SoundDataAnalyzer {
         }
 
         byte detectedSymbol = compareSymbolValue(maxZeroValue, maxOneValue, maxAdditionalValue);
-        if (detectedSymbol != -1) {
-            Log.d(mTagName, "Detected symbol - " + String.valueOf(detectedSymbol));
-        }
+//        if (detectedSymbol != -1) {
+//            Log.d(mTagName, "Detected symbol - " + String.valueOf(detectedSymbol));
+//        }
         return detectedSymbol;
     }
 
@@ -149,18 +149,39 @@ public class SoundDataAnalyzer {
             }
         }
 
+//        Log.d(mTagName, "Zero -" + String.valueOf(maxZeroValue));
+//        Log.d(mTagName, "One -" + String.valueOf(maxOneValue));
+//        Log.d(mTagName, "Additional -" + String.valueOf(maxAdditionalValue));
 
-        Log.d(mTagName, "Zero -" + String.valueOf(maxZeroValue));
-        Log.d(mTagName, "One -" + String.valueOf(maxOneValue));
-        Log.d(mTagName, "Additional -" + String.valueOf(maxAdditionalValue));
+        // TODO - check max value volume
 
-
-        if (maxValue < preMaxValue * 4.0d) {
+//        if (maxValue < preMaxValue * 4.0d) {
+        if (maxValue < 0.1d || maxValue < preMaxValue * 3.5d) {
             return NONE_SYMBOL;
         } else {
-            if (maxValueSymbol == 0) return ZERO_SYMBOL;
-            else if (maxValueSymbol == 1) return ONE_SYMBOL;
-            else return ADDITIONAL_SYMBOL;
+            if (maxValueSymbol == 0) {
+                Log.d(mTagName, "Detected symbol - " + String.valueOf(ZERO_SYMBOL)
+                        + "-:-" + String.valueOf(maxValue / preMaxValue) + "-:-"
+                        + " : " + String.valueOf(maxZeroValue)
+                        + " : " + String.valueOf(maxOneValue)
+                        + " : " + String.valueOf(maxAdditionalValue));
+                return ZERO_SYMBOL;
+            }
+            else if (maxValueSymbol == 1) {
+                Log.d(mTagName, "Detected symbol - " + String.valueOf(ONE_SYMBOL)
+                        + "-:-" + String.valueOf(maxValue / preMaxValue) + "-:-"
+                        + " : " + String.valueOf(maxZeroValue)
+                        + " : " + String.valueOf(maxOneValue)
+                        + " : " + String.valueOf(maxAdditionalValue));
+                return ONE_SYMBOL;
+            } else {
+                Log.d(mTagName, "Detected symbol - " + String.valueOf(ADDITIONAL_SYMBOL)
+                        + "-:-" + String.valueOf(maxValue / preMaxValue) + "-:-"
+                        + " : " + String.valueOf(maxZeroValue)
+                        + " : " + String.valueOf(maxOneValue)
+                        + " : " + String.valueOf(maxAdditionalValue));
+                return ADDITIONAL_SYMBOL;
+            }
         }
     }
 

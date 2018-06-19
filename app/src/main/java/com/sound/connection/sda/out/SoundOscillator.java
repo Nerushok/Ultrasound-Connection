@@ -50,6 +50,7 @@ public class SoundOscillator {
     }
 
     private void init() {
+        mInitiated = true;
         mGenerateSoundExecutor = Executors.newFixedThreadPool(3);
 
         int bufferSize = AudioTrack.getMinBufferSize(mSampleRate,
